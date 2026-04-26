@@ -1,6 +1,9 @@
+import logging
 from abc import ABC, abstractmethod
 
 from models import SubTask, AgentResult
+
+logger = logging.getLogger(__name__)
 
 
 class LLMCaller:
@@ -20,6 +23,9 @@ class LLMCaller:
                 return None
             return response.content
         except Exception:
+            # Any provider failure (network, timeout, bad response) becomes None;
+            # callers check for None and return an appropriate AgentResult.
+            logger.exception("LLM call failed in %s", self.__class__.__name__)
             return None
 
     def __repr__(self) -> str:

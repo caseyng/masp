@@ -1,7 +1,11 @@
+import logging
+
 from base_agent import BaseAgent, LLMCaller
 from boundary import LLMBoundary
 from models import SubTask, AgentResult, InjectionCheckAgentConfig
 from tools import scan_injection_patterns, check_parameterised_queries
+
+logger = logging.getLogger(__name__)
 
 
 class InjectionCheckAgent(BaseAgent):
@@ -14,7 +18,7 @@ class InjectionCheckAgent(BaseAgent):
     )
     _tools = [scan_injection_patterns, check_parameterised_queries]
 
-    def __init__(self, subtask: SubTask, config: InjectionCheckAgentConfig, llm_provider) -> None:
+    def __init__(self, config: InjectionCheckAgentConfig, llm_provider) -> None:
         self._config = config
         self._llm = llm_provider
 
@@ -71,6 +75,7 @@ class InjectionCheckAgent(BaseAgent):
             return AgentResult(task_type=subtask.task_type, success=True, content=response)
 
         except Exception:
+            logger.exception("Unhandled error in InjectionCheckAgent.execute")
             return AgentResult(
                 task_type=subtask.task_type,
                 success=False,

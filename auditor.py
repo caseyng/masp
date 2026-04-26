@@ -48,5 +48,11 @@ class Auditor:
         except OSError:
             pass
 
+    def __enter__(self) -> "Auditor":
+        return self
+
+    def __exit__(self, *_) -> None:
+        self.close()
+
     def __repr__(self) -> str:
         return f"Auditor(closed={self._closed})"

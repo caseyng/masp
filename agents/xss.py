@@ -1,7 +1,11 @@
+import logging
+
 from base_agent import BaseAgent
 from boundary import LLMBoundary
 from models import SubTask, AgentResult, XSSCheckAgentConfig
 from tools import scan_xss_patterns
+
+logger = logging.getLogger(__name__)
 
 
 class XSSCheckAgent(BaseAgent):
@@ -14,7 +18,7 @@ class XSSCheckAgent(BaseAgent):
     )
     _tools = [scan_xss_patterns]
 
-    def __init__(self, subtask: SubTask, config: XSSCheckAgentConfig, llm_provider) -> None:
+    def __init__(self, config: XSSCheckAgentConfig, llm_provider) -> None:
         self._config = config
         self._llm = llm_provider
 
@@ -71,6 +75,7 @@ class XSSCheckAgent(BaseAgent):
             return AgentResult(task_type=subtask.task_type, success=True, content=response)
 
         except Exception:
+            logger.exception("Unhandled error in XSSCheckAgent.execute")
             return AgentResult(
                 task_type=subtask.task_type,
                 success=False,

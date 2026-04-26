@@ -1,7 +1,11 @@
+import logging
+
 from base_agent import BaseAgent
 from boundary import LLMBoundary
 from models import SubTask, AgentResult, AuthCheckAgentConfig
 from tools import check_auth_headers
+
+logger = logging.getLogger(__name__)
 
 
 class AuthCheckAgent(BaseAgent):
@@ -15,7 +19,7 @@ class AuthCheckAgent(BaseAgent):
     )
     _tools = [check_auth_headers]
 
-    def __init__(self, subtask: SubTask, config: AuthCheckAgentConfig, llm_provider) -> None:
+    def __init__(self, config: AuthCheckAgentConfig, llm_provider) -> None:
         self._config = config
         self._llm = llm_provider
 
@@ -72,6 +76,7 @@ class AuthCheckAgent(BaseAgent):
             return AgentResult(task_type=subtask.task_type, success=True, content=response)
 
         except Exception:
+            logger.exception("Unhandled error in AuthCheckAgent.execute")
             return AgentResult(
                 task_type=subtask.task_type,
                 success=False,

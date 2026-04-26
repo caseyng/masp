@@ -1,4 +1,4 @@
-import sys
+import logging
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -12,9 +12,10 @@ from models import (
     PipelineError,
     DecomposerError,
     RegistryKeyError,
-    AuditWriteError,
 )
 from registry import Registry
+
+logger = logging.getLogger(__name__)
 
 _BOUNDARY_FAILURE_MODES = {"boundary_injection_detected", "boundary_output_unsafe"}
 
@@ -102,14 +103,7 @@ class Orchestrator:
                     failure_mode="unknown_task_type",
                 ))
 
-        if not agents_to_run and not results:
-            self._safe_log("pipeline_error", {
-                "run_id": run_id,
-                "failure_mode": "no_agents_spawned",
-            })
-            raise PipelineError("no_agents_spawned")
-
-        if not agents_to_run and results:
+        if not agents_to_run:
             self._safe_log("pipeline_error", {
                 "run_id": run_id,
                 "failure_mode": "no_agents_spawned",
@@ -126,7 +120,7 @@ class Orchestrator:
         # Concurrent execution — all agents run simultaneously, all futures collected
         with ThreadPoolExecutor(max_workers=self._config.max_workers) as pool:
             futures = {
-                pool.submit(agent_class(subtask, agent_config, self._llm).execute, subtask): subtask.task_type
+                pool.submit(agent_class(agent_config, self._llm).execute, subtask): subtask.task_type
                 for subtask, agent_class, agent_config in agents_to_run
             }
 
@@ -135,6 +129,7 @@ class Orchestrator:
                 try:
                     result = future.result()
                 except Exception:
+                    logger.exception("Agent future raised unexpectedly: task_type=%s", task_type)
                     result = AgentResult(
                         task_type=task_type,
                         success=False,
@@ -192,7 +187,7 @@ class Orchestrator:
         try:
             self._auditor.log(event, data)
         except Exception as e:
-            print(f"audit_write_failed: {e}", file=sys.stderr)
+            logger.warning("audit_write_failed: %s", e)
 
     def __repr__(self) -> str:
         return f"Orchestrator(closed={self._closed})"

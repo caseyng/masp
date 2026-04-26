@@ -1,6 +1,10 @@
+import logging
+
 from base_agent import BaseAgent
 from boundary import LLMBoundary
 from models import SubTask, AgentResult, GenericAuditAgentConfig
+
+logger = logging.getLogger(__name__)
 
 
 class GenericAuditAgent(BaseAgent):
@@ -15,7 +19,7 @@ class GenericAuditAgent(BaseAgent):
     )
     _tools = []
 
-    def __init__(self, subtask: SubTask, config: GenericAuditAgentConfig, llm_provider) -> None:
+    def __init__(self, config: GenericAuditAgentConfig, llm_provider) -> None:
         self._config = config
         self._llm = llm_provider
 
@@ -57,6 +61,7 @@ class GenericAuditAgent(BaseAgent):
             return AgentResult(task_type=subtask.task_type, success=True, content=response)
 
         except Exception:
+            logger.exception("Unhandled error in GenericAuditAgent.execute")
             return AgentResult(
                 task_type=subtask.task_type,
                 success=False,

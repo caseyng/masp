@@ -1,9 +1,0 @@
-{"event": "run_started", "timestamp_utc": "2026-04-26T21:46:01.396124+00:00", "schema_version": "0.4", "run_id": "53545a1d", "audit_request_length": 46}
-{"event": "decompose_complete", "timestamp_utc": "2026-04-26T21:46:01.398983+00:00", "schema_version": "0.4", "run_id": "53545a1d", "subtask_count": 3}
-{"event": "agent_started", "timestamp_utc": "2026-04-26T21:46:01.399106+00:00", "schema_version": "0.4", "run_id": "53545a1d", "task_type": "injection_check"}
-{"event": "agent_started", "timestamp_utc": "2026-04-26T21:46:01.399152+00:00", "schema_version": "0.4", "run_id": "53545a1d", "task_type": "auth_check"}
-{"event": "agent_started", "timestamp_utc": "2026-04-26T21:46:01.399187+00:00", "schema_version": "0.4", "run_id": "53545a1d", "task_type": "xss_check"}
-{"event": "agent_complete", "timestamp_utc": "2026-04-26T21:46:01.405570+00:00", "schema_version": "0.4", "run_id": "53545a1d", "task_type": "injection_check", "success": true}
-{"event": "agent_complete", "timestamp_utc": "2026-04-26T21:46:01.405767+00:00", "schema_version": "0.4", "run_id": "53545a1d", "task_type": "xss_check", "success": true}
-{"event": "agent_complete", "timestamp_utc": "2026-04-26T21:46:01.409574+00:00", "schema_version": "0.4", "run_id": "53545a1d", "task_type": "auth_check", "success": true}
-{"event": "run_complete", "timestamp_utc": "2026-04-26T21:46:01.410572+00:00", "schema_version": "0.4", "run_id": "53545a1d", "successful_count": 3, "failed_count": 0, "sufficient": true}
